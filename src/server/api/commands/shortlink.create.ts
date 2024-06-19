@@ -11,6 +11,7 @@ export default class Command_CreateShortlink implements ApiCommand<ShortlinkCons
 }> {
     async handle(options: ShortlinkConstructorOptions) {
         const shortlink = Core.database.services.shortlink.createShortlink(options);
+        await Core.database.em.persistAndFlush(shortlink);
         return { success: true, id: shortlink.id };
 
     }
