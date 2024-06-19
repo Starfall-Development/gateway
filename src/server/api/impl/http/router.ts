@@ -13,6 +13,10 @@ router.get('/', (req, res) => {
     res.sendFile(resolve("../index/dist/index.html"));
 })
 
+router.get('/me', (req, res) => {
+    res.redirect("/#run_about")
+})
+
 router.get('/api/:command', async (req, res) => {
     const command = req.params.command;
     const options = req.query;
