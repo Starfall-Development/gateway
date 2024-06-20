@@ -50,6 +50,10 @@ export default class Channel<DataType extends {
         this.logger = Logger.create(`channel.${id}`);
     }
 
+    public isProtected() {
+        return this.options?.key != undefined;
+    }
+
     public isCorrectKey(key: string) {
         return this.options?.key ? this.options.key === key : true;
     }
@@ -60,7 +64,7 @@ export default class Channel<DataType extends {
 
     public subscribe<T extends keyof DataType>(clientId: string, callback: (channel: Channel, event: T, data: DataType[T] & MessageRequiredOptions) => void | Promise<void>, options?: SubscribeOptions) {
         if (!this.isCorrectKey(options?.key || "")) {
-            return;
+            return false;
         }
 
         if (!this.subscribers[clientId]) {
@@ -74,6 +78,7 @@ export default class Channel<DataType extends {
             }
         })
 
+        return true;
     }
 
     public subscribeToEvent<T extends keyof DataType>(clientId: string, event: T, callback: (channel: Channel, data: DataType[T] & MessageRequiredOptions) => void | Promise<void>, options?: SubscribeOptions) {

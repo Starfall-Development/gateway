@@ -9,12 +9,12 @@ import { InternalChannel } from "../../../messaging/channels/internal";
 export default class Socket implements BaseServerImpl {
     public readonly type = "socket";
     public readonly clientId = `core.server.${this.type}`;
+
     public io: Server<SocketClientEvents, SocketClientEvents>;
     private logger = Logger.create("Socket");
 
     constructor(private server: HTTP) {
         this.io = new Server(server.server, {
-            // transports: ["websocket", "polling"],
             path: "/socket"
         });
     }

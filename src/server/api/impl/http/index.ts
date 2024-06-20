@@ -8,6 +8,7 @@ import router from "./router";
 export default class HTTP implements BaseServerImpl {
     public readonly type = "http";
     public readonly clientId = `core.server.${this.type}`;
+
     public app = express();
     public server = http.createServer(this.app);
     private port: number = 3000;

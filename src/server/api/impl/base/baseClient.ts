@@ -49,7 +49,8 @@ export default class Client {
 
     public subscribe(channelId: string, options?: SubscribeOptions) {
         let channel = PubSub.getChannel(channelId);
-        channel.subscribe(this.id, (channel, event, data) => {
+
+        return channel.subscribe(this.id, (channel, event, data) => {
             this.send(channel.id, event as string, data)
         }, options);
     }

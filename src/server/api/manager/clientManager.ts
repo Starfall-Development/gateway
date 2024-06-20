@@ -19,16 +19,20 @@ export default class ClientManager {
             let client = this.clients.get(data.sender);
 
             if (client) {
-                client.subscribe(data.channel);
+                if (client.subscribe(data.channel, { key: data.key })) {
+                    return {
+                        success: true,
+                        channel: data.channel,
+                    }
+                } else return {
+                    success: false,
+                    channel: data.channel,
+                    message: "Incorrect key"
+                }
             } else return {
                 success: false,
                 channel: data.channel,
                 message: "Client not found"
-            }
-
-            return {
-                success: true,
-                channel: data.channel,
             }
         })
 
