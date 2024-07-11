@@ -1,12 +1,14 @@
 import { Router, static as static_ } from 'express';
+import { resolve } from 'path';
 import CommandManager from '../..';
 
 import shortlinkRouter from './routes/shortlinkRouter';
-import { resolve } from 'path';
+import authRouter from './routes/authRouter';
 const router = Router();
 
 
 router.use("/assets", static_(resolve("../index/dist/assets/")))
+router.use("/auth", authRouter)
 router.use("/l", shortlinkRouter)
 
 router.get('/', (req, res) => {
