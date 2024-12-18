@@ -128,7 +128,7 @@ export default class RobloxOAuthProvider extends oAuthProvider {
             const accessToken = new UserAccessToken(userEntity, new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), handler.key)
             await Core.database.em.persistAndFlush(accessToken)
 
-            const redirectUrl = new URL(handler.url)
+            const redirectUrl = new URL(handler.url.startsWith("/") ? `${Core.BASE_URL}${handler.url}` : handler.url)
             redirectUrl.searchParams.append("token", accessToken.token)
 
             res.redirect(

@@ -8,19 +8,21 @@ import cookieParser from "cookie-parser";
 
 export default class HTTP implements BaseServerImpl {
     public readonly type = "http";
-    public readonly clientId = `core.server.${this.type}`;
+    public readonly clientId = `gateway.server.${this.type}`;
 
     public app = express();
     public server = http.createServer(this.app);
     private port: number = 3000;
+    private host: string = "localhost";
     private logger = Logger.create("HTTP");
 
-    constructor(port: number = 3000) {
+    constructor(port: number = 3000, host: string = "localhost") {
         this.port = port;
+        this.host = host;
     }
 
     public start() {
-        this.server.listen(this.port, () => {
+        this.server.listen(this.port, this.host, () => {
             this.logger.log(`HTTP server listening on port ${this.port}.`);
             InternalChannel.publish(this.clientId, "server:started", { type: this.type, port: this.port });
         });

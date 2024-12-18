@@ -7,7 +7,7 @@ import { InternalChannel } from "../../../messaging/channels/internal.js";
 
 export default class TCP implements BaseServerImpl {
     public readonly type = "tcp";
-    public readonly clientId = `jpxs.server.${this.type}`;
+    public readonly clientId = `gateway.server.${this.type}`;
     private server: net.Server;
     private port: number = 1337;
     private logger = Logger.create("TCP");

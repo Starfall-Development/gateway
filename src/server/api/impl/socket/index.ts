@@ -8,7 +8,7 @@ import { InternalChannel } from "../../../messaging/channels/internal.js";
 
 export default class Socket implements BaseServerImpl {
     public readonly type = "socket";
-    public readonly clientId = `core.server.${this.type}`;
+    public readonly clientId = `gateway.server.${this.type}`;
 
     public io: Server<SocketClientEvents, SocketClientEvents>;
     private logger = Logger.create("Socket");

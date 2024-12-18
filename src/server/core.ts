@@ -11,9 +11,14 @@ export default class Core {
     private static logger = Logger.create("Core");
 
     public static tcp = new TCP(parseInt(process.env.TCP_PORT || "1337"));
-    public static http = new HTTP(parseInt(process.env.HTTP_PORT || "3000"));
+    public static http = new HTTP(parseInt(process.env.HTTP_PORT || "3000"), process.env.HTTP_HOST);
     public static socket = new Socket(this.http);
     public static database = new Database();
+
+    public static readonly BASE_URL = process.env.BASE_URL || `http://${process.env.HTTP_HOST || "localhost"}:${process.env.HTTP_PORT || "3000"}`;
+    public static readonly SOCKET_URL = process.env.SOCKET_URL || `ws://${process.env.HTTP_HOST || "localhost"}:${process.env.HTTP_PORT || "3000"}`;
+
+    public static readonly VERSION = process.env.npm_package_version || "0.0.0";
 
     public static start() {
 
