@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import UserAuth, { AuthType } from "../../../../database/entities/userAuth.entity.js";
 import SessionManager from "../manager/sessionManager.js";
-import oAuthProvider from "./oAuthProvider.js";
+import oAuthProvider, { UserData } from "./oAuthProvider.js";
 import Core from "../../../core.js";
 import UserAccessToken from "../../../../database/entities/userAccessToken.entity.js";
 import AuthManager from "../../manager/authManager.js";
 import User from "../../../../database/entities/user.entity.js";
+import { ms, time } from "../../../../utils/time.js";
 
 export default class GitHubOAuthProvider extends oAuthProvider {
 
@@ -25,6 +26,7 @@ export default class GitHubOAuthProvider extends oAuthProvider {
     public async handleCallback(req: Request, res: Response) {
         const code = req.query.code as string
         const state = req.query.state as string
+        const userAgent = req.headers["user-agent"] as string
 
         if (!code || !state) {
             res.status(400).send("Missing code or state")
@@ -52,8 +54,7 @@ export default class GitHubOAuthProvider extends oAuthProvider {
             return
         }
 
-
-        const currentSession = await SessionManager.checkSession(req.cookies.session)
+        const currentSession = await SessionManager.checkSession(req.cookies.session, userAgent)
 
         let userEntity: User | undefined
         let userAuth: UserAuth | undefined
@@ -94,8 +95,8 @@ export default class GitHubOAuthProvider extends oAuthProvider {
 
         }
 
-        const session = await SessionManager.genSession(userEntity)
-        res.cookie("session", session.id, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true })
+        const session = await SessionManager.genSession(userEntity, userAgent)
+        res.cookie("session", session.id, { maxAge: ms("7 days"), httpOnly: true })
 
         if (identifier && typeof identifier === "string") {
 
@@ -107,7 +108,7 @@ export default class GitHubOAuthProvider extends oAuthProvider {
             }
 
             // create a user access token for the service to access the user's account data
-            const accessToken = new UserAccessToken(userEntity, new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), handler.key)
+            const accessToken = new UserAccessToken(userEntity, time("15 minutes").fromNow().toDate(), handler.key)
             await Core.database.em.persistAndFlush(accessToken)
 
             const redirectUrl = new URL(handler.url.startsWith("/") ? `${Core.BASE_URL}${handler.url}` : handler.url)
@@ -145,8 +146,33 @@ export default class GitHubOAuthProvider extends oAuthProvider {
             }
         })
 
-        return response.json() as Promise<{ id: number, login: string }>
+        return response.json() as Promise<{ id: number, login: string, avatar_url: string }>
     }
 
+    public refreshAccessToken(userId: string): void {
+        // GitHub does not provide a refresh token
+    }
+
+    public async getUserData(userId: string): Promise<UserData> {
+        const user = await Core.database.services.user.findById(userId)
+
+        if (!user) {
+            throw new Error("Invalid user")
+        }
+
+        const auth = await user.getAuth(AuthType.GitHub)
+
+        if (!auth) {
+            throw new Error("Invalid auth")
+        }
+
+        const data = await this.getUser(auth.token)
+
+        return {
+            id: data.id.toString(),
+            displayName: data.login,
+            avatarUrl: data.avatar_url
+        }
+    }
 
 }

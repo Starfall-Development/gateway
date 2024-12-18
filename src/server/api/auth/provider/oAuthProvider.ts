@@ -19,5 +19,12 @@ export default abstract class oAuthProvider {
 
     public abstract generateOauthUrl(identifier?: string): string | Promise<string>
     public abstract handleCallback(req: any, res: any): void
+    public abstract refreshAccessToken(userId: string): void
+    public abstract getUserData(userId: string): Promise<UserData>
+}
 
+export interface UserData {
+    id: string
+    displayName: string
+    avatarUrl: string
 }

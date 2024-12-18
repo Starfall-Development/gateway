@@ -85,17 +85,17 @@ export default class UserAuth {
         })
     }
 
-    public static fromDiscord(user: User, userId: string, token: string, refreshToken?: string, scopes: string[] = [], expiresAt?: Date) {
+    public static fromDiscord(user: User, userId: string, token: string, refreshToken: string, scopes: string[], expiresAt: Date) {
         const auth = new UserAuth(`discord:${userId}`, AuthType.Discord, user, token, refreshToken, scopes, expiresAt)
         return auth
     }
 
-    public static fromGithub(user: User, id: number, token: string, scopes: string[] = [], expiresAt?: Date) {
-        const auth = new UserAuth(`github:${id}`, AuthType.GitHub, user, token, undefined, scopes, expiresAt)
+    public static fromGithub(user: User, id: number, token: string, scopes: string[]) {
+        const auth = new UserAuth(`github:${id}`, AuthType.GitHub, user, token, undefined, scopes)
         return auth
     }
 
-    public static fromRoblox(user: User, sub: string, token: string, refreshToken?: string, scopes: string[] = [], expiresAt?: Date) {
+    public static fromRoblox(user: User, sub: string, token: string, refreshToken: string, scopes: string[], expiresAt: Date) {
         const auth = new UserAuth(`roblox:${sub}`, AuthType.Roblox, user, token, refreshToken, scopes, expiresAt)
         return auth
     }

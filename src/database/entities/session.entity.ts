@@ -12,6 +12,9 @@ export default class Session {
     user!: Rel<User>;
 
     @Property()
+    userAgent!: string
+
+    @Property()
     lastUsed: Date = new Date();
 
 }

@@ -15,6 +15,11 @@ export default class User {
     @Property()
     displayName: string
 
+    @Property({
+        nullable: true
+    })
+    avatarUrl?: string
+
     @OneToMany({
         entity: () => UserAuth,
         mappedBy: "user",
@@ -36,8 +41,9 @@ export default class User {
     @Property()
     createdAt: Date = new Date()
 
-    constructor(displayName?: string) {
+    constructor(displayName?: string, avatarUrl?: string) {
         this.displayName = displayName || this.id
+        this.avatarUrl = avatarUrl
     }
 
     public addAuth(auth: UserAuth) {

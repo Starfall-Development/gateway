@@ -11,6 +11,7 @@ export default class Command_GetUserData implements ApiCommand<{
     data?: {
         id: string;
         dislayName: string;
+        avatar?: string;
         createdAt: string;
     },
     token?: {
@@ -55,6 +56,7 @@ export default class Command_GetUserData implements ApiCommand<{
             data: {
                 id: user.id,
                 dislayName: user.displayName,
+                avatar: user.avatarUrl,
                 createdAt: user.createdAt.toISOString()
             },
             token: {

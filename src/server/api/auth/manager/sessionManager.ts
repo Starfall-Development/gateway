@@ -5,16 +5,17 @@ import Core from "../../../core.js";
 const sessionExpire = 604800000;
 
 export default class SessionManager {
-    public static async genSession(user: User): Promise<Session> {
+    public static async genSession(user: User, userAgent: string): Promise<Session> {
         const session = new Session();
         session.user = user;
+        session.userAgent = userAgent;
 
         await Core.database.em.persistAndFlush(session);
 
         return session;
     }
 
-    public static async checkSession(session: string): Promise<Session | undefined> {
+    public static async checkSession(session: string, userAgent?: string): Promise<Session | undefined> {
         this.checkSessionExpire();
 
         // check if session exists
@@ -25,11 +26,18 @@ export default class SessionManager {
         });
 
         if (validSession) {
+
+            if (userAgent && validSession.userAgent !== userAgent) {
+                return undefined;
+            }
+
             // Update the session
             validSession.lastUsed = new Date();
             await Core.database.em.persistAndFlush(validSession);
             return validSession;
         }
+
+
 
         return undefined;
     }
