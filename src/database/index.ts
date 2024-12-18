@@ -1,9 +1,12 @@
 import { MikroORM, PostgreSqlDriver, EntityManager } from "@mikro-orm/postgresql";
 import { TsMorphMetadataProvider } from "@mikro-orm/reflection";
-import Logger from "../utils/logger";
-import { DatabaseChannel } from "../server/messaging/channels/database";
-import { ShortlinkRepository } from "./repositories/shortlink.repo";
-import { Shortlink } from "./entities/shortlink.entity";
+import Logger from "../utils/logger.js";
+import { DatabaseChannel } from "../server/messaging/channels/database.js";
+import { EntityRepository } from "@mikro-orm/core";
+import Session from "./entities/session.entity.js";
+import User from "./entities/user.entity.js";
+import UserAuth from "./entities/userAuth.entity.js";
+import UserRepository from "./repositories/userRepository.js";
 
 let instance: Database;
 
@@ -13,7 +16,9 @@ export default class Database {
   private _orm!: MikroORM;
   private _em!: EntityManager<PostgreSqlDriver>;
   public services!: {
-    shortlink: ShortlinkRepository;
+    session: EntityRepository<Session>,
+    user: UserRepository
+    userAuth: EntityRepository<UserAuth>
   }
 
   constructor() {
@@ -46,7 +51,9 @@ export default class Database {
     this._em = _orm.em;
 
     this.services = {
-      shortlink: this.em.getRepository(Shortlink),
+      session: this.em.getRepository(Session),
+      user: this.em.getRepository(User),
+      userAuth: this.em.getRepository(UserAuth)
     }
 
     Logger.info("Database", "Database initialized");

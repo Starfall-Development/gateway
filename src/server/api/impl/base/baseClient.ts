@@ -1,8 +1,8 @@
-import { Logger } from "../../../../utils/logger";
-import { SubscribeOptions } from "../../../messaging/channel";
-import PubSub from "../../../messaging/pubsub";
-import { ImplType } from "../../../types/internal";
-import ClientManager from "../../manager/clientManager";
+import { Logger } from "../../../../utils/logger.js";
+import { SubscribeOptions } from "../../../messaging/channel.js";
+import PubSub from "../../../messaging/pubsub.js";
+import { ImplType } from "../../../types/internal.js";
+import ClientManager from "../../manager/clientManager.js";
 export default class Client {
     public id: string;
     public type: ImplType = "unassigned"

@@ -14,6 +14,8 @@ const config: Options = {
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     debug: true
+
 };
 
 export default config;
+

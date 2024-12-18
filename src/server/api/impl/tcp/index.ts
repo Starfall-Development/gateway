@@ -1,9 +1,9 @@
 import net from "net";
-import { Logger } from "../../../../utils/logger";
-import BaseServerImpl from "../base/baseServerImpl";
-import TCPClient from "./tcpClient";
-import ClientManager from "../../manager/clientManager";
-import { InternalChannel } from "../../../messaging/channels/internal";
+import { Logger } from "../../../../utils/logger.js";
+import BaseServerImpl from "../base/baseServerImpl.js";
+import TCPClient from "./tcpClient.js";
+import ClientManager from "../../manager/clientManager.js";
+import { InternalChannel } from "../../../messaging/channels/internal.js";
 
 export default class TCP implements BaseServerImpl {
     public readonly type = "tcp";

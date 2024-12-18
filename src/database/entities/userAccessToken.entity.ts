@@ -1,13 +1,22 @@
-import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
-import Id from "../../utils/id";
+import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import type { Rel } from "@mikro-orm/core";
+import Id from "../../utils/id.js";
+import User from "./user.entity.js";
 
 @Entity()
 export default class UserAccessToken {
     @PrimaryKey()
     id = Id.get();
 
-    @Property()
-    username: string;
+    @ManyToOne({
+        entity: () => User
+    })
+    user!: Rel<User>;
+
+    @Property({
+        nullable: true
+    })
+    key?: string; // if key is null, then this is a one-time token, delete after use
 
     @Property()
     token: string;
@@ -21,8 +30,9 @@ export default class UserAccessToken {
     @Property()
     createdAt: Date = new Date();
 
-    constructor(username: string, expiresAt: Date) {
-        this.username = username;
+    constructor(user: Rel<User>, expiresAt: Date, key?: string,) {
+        this.user = user;
+        this.key = key;
         this.expiresAt = expiresAt;
         this.token = Id.get();
         this.refreshToken = Id.get();

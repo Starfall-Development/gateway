@@ -1,6 +1,5 @@
-import { config } from "dotenv";
-config();
-import GlobalLogger from "./utils/logger";
+import "dotenv/config";
+import GlobalLogger from "./utils/logger.js";
 
 GlobalLogger.init()
 
@@ -15,7 +14,7 @@ for (let i = 0; i < args.length; i++) {
     GlobalLogger.log("Startup", `Setting environment variable ${key} to ${value}`);
 }
 
-import Core from "./server/core";
+import Core from "./server/core.js";
 
 Core.start();
 

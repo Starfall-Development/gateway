@@ -1,9 +1,10 @@
 import http from "http";
 import express from "express";
-import { Logger } from "../../../../utils/logger";
-import BaseServerImpl from "../base/baseServerImpl";
-import { InternalChannel } from "../../../messaging/channels/internal";
-import router from "./router";
+import { Logger } from "../../../../utils/logger.js";
+import BaseServerImpl from "../base/baseServerImpl.js";
+import { InternalChannel } from "../../../messaging/channels/internal.js";
+import router from "./router.js";
+import cookieParser from "cookie-parser";
 
 export default class HTTP implements BaseServerImpl {
     public readonly type = "http";
@@ -31,6 +32,7 @@ export default class HTTP implements BaseServerImpl {
 
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(cookieParser());
         this.app.use(router)
 
         this.app.set("json spaces", 2);

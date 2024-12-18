@@ -7,18 +7,19 @@ import UserAccessToken from "../../../../database/entities/userAccessToken.entit
 import AuthManager from "../../manager/authManager.js";
 import User from "../../../../database/entities/user.entity.js";
 
-export default class GitHubOAuthProvider extends oAuthProvider {
+export default class DiscordOAuthProvider extends oAuthProvider {
 
     constructor() {
         super()
     }
 
     public generateOauthUrl(identifier?: string) {
-        const url = new URL("https://github.com/login/oauth/authorize")
-        url.searchParams.append("client_id", process.env.GITHUB_CLIENT_ID!)
-        url.searchParams.append("redirect_uri", process.env.GITHUB_REDIRECT_URI!)
+        const url = new URL("https://discord.com/oauth2/authorize")
+        url.searchParams.append("client_id", process.env.DISCORD_CLIENT_ID!)
+        url.searchParams.append("redirect_uri", process.env.DISCORD_REDIRECT_URI!)
         url.searchParams.append("state", this.generateState(identifier))
-        url.searchParams.append("scope", "read:user")
+        url.searchParams.append("response_type", "code")
+        url.searchParams.append("scope", "identify")
         return url.toString()
     }
 
@@ -40,6 +41,7 @@ export default class GitHubOAuthProvider extends oAuthProvider {
 
         const token = await this.exchangeCode(code)
 
+
         if (!token.access_token) {
             res.status(400).send("Invalid code")
             return
@@ -52,7 +54,6 @@ export default class GitHubOAuthProvider extends oAuthProvider {
             return
         }
 
-
         const currentSession = await SessionManager.checkSession(req.cookies.session)
 
         let userEntity: User | undefined
@@ -62,15 +63,16 @@ export default class GitHubOAuthProvider extends oAuthProvider {
             // user is already logged in, merge this new account with the existing one
 
             userEntity = currentSession.user
-            const existingAuth = await userEntity.getAuth(AuthType.GitHub)
+            const existingAuth = await userEntity.getAuth(AuthType.Discord)
 
             if (existingAuth) {
                 // overwrite the existing auth with the new one
                 existingAuth.token = token.access_token
+                existingAuth.token2 = token.refresh_token
                 existingAuth.scopes = [token.scope]
                 await Core.database.em.persistAndFlush(existingAuth)
             } else {
-                userAuth = UserAuth.fromGithub(userEntity, user.id, token.access_token, [token.scope])
+                userAuth = UserAuth.fromDiscord(userEntity, user.id, token.access_token, token.refresh_token, [token.scope])
                 await Core.database.em.persistAndFlush(userAuth)
             }
 
@@ -79,16 +81,16 @@ export default class GitHubOAuthProvider extends oAuthProvider {
 
         } else {
 
-            userEntity = await Core.database.services.user.findByAuthId(`github:${user.id}`) || undefined
+            userEntity = await Core.database.services.user.findByAuthId(`discord:${user.id}`) || undefined
 
             if (!userEntity) {
-                userEntity = await Core.database.services.user.createUser(user.login)
+                userEntity = await Core.database.services.user.createUser(user.username)
             }
 
             userAuth = await userEntity!.getAuth(AuthType.Discord)
 
             if (!userAuth) {
-                userAuth = UserAuth.fromGithub(userEntity, user.id, token.access_token, [token.scope])
+                userAuth = UserAuth.fromDiscord(userEntity, user.id, token.access_token, token.refresh_token, [token.scope])
                 await Core.database.em.persistAndFlush(userEntity)
             }
 
@@ -98,7 +100,6 @@ export default class GitHubOAuthProvider extends oAuthProvider {
         res.cookie("session", session.id, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true })
 
         if (identifier && typeof identifier === "string") {
-
 
             const handler = AuthManager.getHandler(identifier)
             if (!handler) {
@@ -123,29 +124,36 @@ export default class GitHubOAuthProvider extends oAuthProvider {
     }
 
     public async exchangeCode(code: string) {
-        const url = new URL("https://github.com/login/oauth/access_token")
-        url.searchParams.append("client_id", process.env.GITHUB_CLIENT_ID!)
-        url.searchParams.append("client_secret", process.env.GITHUB_CLIENT_SECRET!)
-        url.searchParams.append("code", code)
-        url.searchParams.append("redirect_uri", process.env.GITHUB_REDIRECT_URI!)
-        const response = await fetch(url.toString(), {
+        const response = await fetch("https://discord.com/api/v10/oauth2/token", {
             method: "POST",
             headers: {
-                "Accept": "application/json"
-            }
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                grant_type: "authorization_code",
+                code: code,
+                redirect_uri: process.env.DISCORD_REDIRECT_URI!,
+                client_id: process.env.DISCORD_CLIENT_ID!,
+                client_secret: process.env.DISCORD_CLIENT_SECRET!
+            }).toString()
         })
 
-        return response.json() as Promise<{ access_token: string, token_type: string, scope: string }>
+        return response.json() as Promise<{ access_token: string, refresh_token: string, token_type: string, scope: string, expires_in: number }>
     }
 
     public async getUser(token: string) {
-        const response = await fetch("https://api.github.com/user", {
+        const response = await fetch("https://discord.com/api/v10/users/@me", {
             headers: {
-                Authorization: `token ${token}`
+                Authorization: `Bearer ${token}`
             }
         })
 
-        return response.json() as Promise<{ id: number, login: string }>
+        return await response.json() as Promise<{
+            id: string,
+            username: string,
+            global_name: string,
+        }>
     }
 
 

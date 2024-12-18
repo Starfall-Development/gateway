@@ -1,6 +1,6 @@
-import Session from "../../../../database/entities/session.entity";
-import User from "../../../../database/entities/user.entity";
-import Core from "../../../core";
+import Session from "../../../../database/entities/session.entity.js";
+import User from "../../../../database/entities/user.entity.js";
+import Core from "../../../core.js";
 
 const sessionExpire = 604800000;
 
@@ -21,7 +21,7 @@ export default class SessionManager {
         const validSession = await Core.database.em.findOne(Session, {
             id: session,
         }, {
-            populate: ["user"],
+            populate: ["user", "user.auth"],
         });
 
         if (validSession) {

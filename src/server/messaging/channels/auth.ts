@@ -1,4 +1,4 @@
-import Channel from "../channel";
+import Channel from "../channel.js";
 
 export const AuthChannel = new Channel<{
     "auth:init": { clientId: string, token: string },

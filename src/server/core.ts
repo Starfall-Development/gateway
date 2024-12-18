@@ -1,13 +1,13 @@
-import TCP from "./api/impl/tcp";
-import HTTP from "./api/impl/http";
-import Socket from "./api/impl/socket";
-import { Logger } from "../utils/logger";
-import ClientManager from "./api/manager/clientManager";
-import CommandManager from "./api";
-import Database from "../database";
+import TCP from "./api/impl/tcp/index.js";
+import HTTP from "./api/impl/http/index.js";
+import Socket from "./api/impl/socket/index.js";
+import { Logger } from "../utils/logger.js";
+import ClientManager from "./api/manager/clientManager.js";
+import CommandManager from "./api/index.js";
+import Database from "../database/index.js";
 
 export default class Core {
-    public static readonly clientId = "jpxs.core";
+    public static readonly clientId = "gateway.core";
     private static logger = Logger.create("Core");
 
     public static tcp = new TCP(parseInt(process.env.TCP_PORT || "1337"));

@@ -1,22 +1,18 @@
 import { Router, static as static_ } from 'express';
 import { resolve } from 'path';
-import CommandManager from '../..';
+import CommandManager from '../../index.js';
 
-import shortlinkRouter from './routes/shortlinkRouter';
-import authRouter from './routes/authRouter';
+import authRouter from './routes/authRouter.js';
+import testRouter from './routes/testRouter.js';
 const router = Router();
 
 
-router.use("/assets", static_(resolve("../index/dist/assets/")))
+router.use("/_", static_(resolve("../index/dist/_/")))
 router.use("/auth", authRouter)
-router.use("/l", shortlinkRouter)
+router.use("/test", testRouter)
 
 router.get('/', (req, res) => {
     res.sendFile(resolve("../index/dist/index.html"));
-})
-
-router.get('/me', (req, res) => {
-    res.redirect("/#run_about")
 })
 
 router.get('/api/:command', async (req, res) => {

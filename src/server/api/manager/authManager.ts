@@ -1,10 +1,14 @@
-import { RedirectAuthHandler } from "../../types/auth";
-import GitHubOAuthProvider from "../auth/provider/githubOAuthProvider";
+import { RedirectAuthHandler } from "../../types/auth.js";
+import DiscordOAuthProvider from "../auth/provider/discordOauthProvider.js";
+import GitHubOAuthProvider from "../auth/provider/githubOAuthProvider.js";
+import RobloxOAuthProvider from "../auth/provider/robloxOAuthProvider.js";
 
 export default class AuthManager {
     private static _authHandlers: Map<string, RedirectAuthHandler> = new Map();
     public static authProviders = {
-        github: new GitHubOAuthProvider()
+        github: new GitHubOAuthProvider(),
+        roblox: new RobloxOAuthProvider(),
+        discord: new DiscordOAuthProvider()
     }
 
     public static addRedirectHandler(url: string) {
@@ -38,7 +42,12 @@ export default class AuthManager {
             }
         }
     }
+
     public static getHandler(identifier: string) {
         return this._authHandlers.get(identifier);
+    }
+
+    public static getProvider(provider: keyof typeof this.authProviders) {
+        return this.authProviders[provider];
     }
 }

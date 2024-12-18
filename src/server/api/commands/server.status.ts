@@ -1,5 +1,5 @@
-import Core from "../../core";
-import ApiCommand from "../base/ApiCommand";
+import Core from "../../core.js";
+import ApiCommand from "../base/ApiCommand.js";
 
 export default class Command_GetServerStatus implements ApiCommand<{
     servers?: string[]

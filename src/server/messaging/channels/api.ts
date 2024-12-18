@@ -1,4 +1,4 @@
-import Channel from "../channel";
+import Channel from "../channel.js";
 
 export const ApiChannel = new Channel<{
     [key: string]: any

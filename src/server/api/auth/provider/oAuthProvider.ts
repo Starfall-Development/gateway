@@ -1,11 +1,9 @@
-import User from "../../../../database/entities/user.entity"
-
 export default abstract class oAuthProvider {
 
     private _validStates: Map<string, string | undefined> = new Map()
 
-    public generateState(identifier?: string) {
-        const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    public generateState(identifier?: string, key?: string) {
+        const state = key || Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
         this._validStates.set(state, identifier)
         return state
     }
@@ -19,7 +17,7 @@ export default abstract class oAuthProvider {
         return false
     }
 
-    public abstract generateOauthUrl(identifier?: string): string
+    public abstract generateOauthUrl(identifier?: string): string | Promise<string>
     public abstract handleCallback(req: any, res: any): void
 
 }
