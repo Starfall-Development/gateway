@@ -21,16 +21,22 @@ authRouter.get('/status', async (req, res) => {
         await sessions.init()
     }
 
+
+
     res.json({
         user: {
             id: session.user.id,
             username: session.user.displayName,
             avatar: session.user.avatarUrl
         },
-        providers: providers.map(provider => ({
-            type: AuthTypeNames[provider.type],
-            id: provider.authId,
-        })),
+        providers:
+            providers.reduce((acc, provider) => {
+                acc[AuthTypeNames[provider.type]] = {
+                    id: provider.authId,
+                    username: provider.username
+                }
+                return acc
+            }, {} as Record<string, { id: string, username: string }>),
         currentSession: session.id,
         sessions: sessions.getItems().map(s => ({
             userAgent: s.userAgent,

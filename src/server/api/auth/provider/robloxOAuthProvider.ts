@@ -94,7 +94,7 @@ export default class RobloxOAuthProvider extends oAuthProvider {
                 existingAuth.scopes = token.scope.split(" ")
                 await Core.database.em.persistAndFlush(existingAuth)
             } else {
-                userAuth = UserAuth.fromRoblox(userEntity, user.sub, token.access_token, token.refresh_token, token.scope.split(" "), time(`${token.expires_in} seconds`).fromNow().toDate())
+                userAuth = UserAuth.fromRoblox(userEntity, user.sub, user.name, token.access_token, token.refresh_token, token.scope.split(" "), time(`${token.expires_in} seconds`).fromNow().toDate())
                 await Core.database.em.persistAndFlush(userAuth)
             }
 
@@ -112,7 +112,7 @@ export default class RobloxOAuthProvider extends oAuthProvider {
             userAuth = await userEntity!.getAuth(AuthType.Roblox)
 
             if (!userAuth) {
-                userAuth = UserAuth.fromRoblox(userEntity, user.sub, token.access_token, token.refresh_token, token.scope.split(" "), time(`${token.expires_in} seconds`).fromNow().toDate())
+                userAuth = UserAuth.fromRoblox(userEntity, user.sub, user.name, token.access_token, token.refresh_token, token.scope.split(" "), time(`${token.expires_in} seconds`).fromNow().toDate())
                 await Core.database.em.persistAndFlush(userEntity)
             }
 

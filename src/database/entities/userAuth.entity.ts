@@ -10,6 +10,9 @@ export default class UserAuth {
     authId: string
 
     @Property()
+    username: string
+
+    @Property()
     @Enum(() => AuthType)
     type: AuthType
 
@@ -51,8 +54,9 @@ export default class UserAuth {
     @Property()
     scopes: string[] = []
 
-    constructor(userId: string, type: AuthType, user: Rel<User>, token: string, token2?: string, scopes: string[] = [], expiresAt?: Date) {
+    constructor(userId: string, username: string, type: AuthType, user: Rel<User>, token: string, token2?: string, scopes: string[] = [], expiresAt?: Date) {
         this.authId = userId
+        this.username = username
         this.type = type
         this.token = token
         this.token2 = token2
@@ -78,25 +82,25 @@ export default class UserAuth {
                     reject(err)
                 }
 
-                const auth = new UserAuth(username, AuthType.Password, user, hash.toString("base64"), salt)
+                const auth = new UserAuth(username, username, AuthType.Password, user, hash.toString("base64"), salt)
                 resolve(auth)
             })
 
         })
     }
 
-    public static fromDiscord(user: User, userId: string, token: string, refreshToken: string, scopes: string[], expiresAt: Date) {
-        const auth = new UserAuth(`discord:${userId}`, AuthType.Discord, user, token, refreshToken, scopes, expiresAt)
+    public static fromDiscord(user: User, userId: string, username: string, token: string, refreshToken: string, scopes: string[], expiresAt: Date) {
+        const auth = new UserAuth(`discord:${userId}`, username, AuthType.Discord, user, token, refreshToken, scopes, expiresAt)
         return auth
     }
 
-    public static fromGithub(user: User, id: number, token: string, scopes: string[]) {
-        const auth = new UserAuth(`github:${id}`, AuthType.GitHub, user, token, undefined, scopes)
+    public static fromGithub(user: User, id: number, username: string, token: string, scopes: string[]) {
+        const auth = new UserAuth(`github:${id}`, username, AuthType.GitHub, user, token, undefined, scopes)
         return auth
     }
 
-    public static fromRoblox(user: User, sub: string, token: string, refreshToken: string, scopes: string[], expiresAt: Date) {
-        const auth = new UserAuth(`roblox:${sub}`, AuthType.Roblox, user, token, refreshToken, scopes, expiresAt)
+    public static fromRoblox(user: User, sub: string, username: string, token: string, refreshToken: string, scopes: string[], expiresAt: Date) {
+        const auth = new UserAuth(`roblox:${sub}`, username, AuthType.Roblox, user, token, refreshToken, scopes, expiresAt)
         return auth
     }
 

@@ -74,7 +74,7 @@ export default class DiscordOAuthProvider extends oAuthProvider {
                 existingAuth.scopes = [token.scope]
                 await Core.database.em.persistAndFlush(existingAuth)
             } else {
-                userAuth = UserAuth.fromDiscord(userEntity, user.id, token.access_token, token.refresh_token, [token.scope], time(`${token.expires_in} seconds`).fromNow().toDate())
+                userAuth = UserAuth.fromDiscord(userEntity, user.id, user.username, token.access_token, token.refresh_token, [token.scope], time(`${token.expires_in} seconds`).fromNow().toDate())
                 await Core.database.em.persistAndFlush(userAuth)
             }
 
@@ -92,7 +92,7 @@ export default class DiscordOAuthProvider extends oAuthProvider {
             userAuth = await userEntity!.getAuth(AuthType.Discord)
 
             if (!userAuth) {
-                userAuth = UserAuth.fromDiscord(userEntity, user.id, token.access_token, token.refresh_token, [token.scope], time(`${token.expires_in} seconds`).fromNow().toDate())
+                userAuth = UserAuth.fromDiscord(userEntity, user.username, user.id, token.access_token, token.refresh_token, [token.scope], time(`${token.expires_in} seconds`).fromNow().toDate())
                 await Core.database.em.persistAndFlush(userEntity)
             }
 

@@ -71,7 +71,7 @@ export default class GitHubOAuthProvider extends oAuthProvider {
                 existingAuth.scopes = [token.scope]
                 await Core.database.em.persistAndFlush(existingAuth)
             } else {
-                userAuth = UserAuth.fromGithub(userEntity, user.id, token.access_token, [token.scope])
+                userAuth = UserAuth.fromGithub(userEntity, user.id, user.login, token.access_token, [token.scope])
                 await Core.database.em.persistAndFlush(userAuth)
             }
 
@@ -89,7 +89,7 @@ export default class GitHubOAuthProvider extends oAuthProvider {
             userAuth = await userEntity!.getAuth(AuthType.Discord)
 
             if (!userAuth) {
-                userAuth = UserAuth.fromGithub(userEntity, user.id, token.access_token, [token.scope])
+                userAuth = UserAuth.fromGithub(userEntity, user.id, user.login, token.access_token, [token.scope])
                 await Core.database.em.persistAndFlush(userEntity)
             }
 
