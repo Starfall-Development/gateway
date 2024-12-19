@@ -109,12 +109,16 @@ export default class DiscordOAuthProvider extends oAuthProvider {
                 return
             }
 
-            // create a user access token for the service to access the user's account data
-            const accessToken = new UserAccessToken(userEntity, time("15 minutes").fromNow().toDate(), handler.key)
-            await Core.database.em.persistAndFlush(accessToken)
+            let accessToken: UserAccessToken | undefined
+
+            if (handler.createAccessToken != false) {
+                // create a user access token for the service to access the user's account data
+                const accessToken = new UserAccessToken(userEntity, time("15 minutes").fromNow().toDate(), handler.key)
+                await Core.database.em.persistAndFlush(accessToken)
+            }
 
             const redirectUrl = new URL(handler.url.startsWith("/") ? `${Core.BASE_URL}${handler.url}` : handler.url)
-            redirectUrl.searchParams.append("token", accessToken.token)
+            if (accessToken) redirectUrl.searchParams.append("token", accessToken.token)
 
             res.redirect(
                 redirectUrl.toString()

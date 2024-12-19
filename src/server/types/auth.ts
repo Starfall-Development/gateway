@@ -3,4 +3,5 @@ export interface RedirectAuthHandler {
     url: string;
     key?: string
     oneTimeUse?: boolean
+    createAccessToken?: boolean
 }

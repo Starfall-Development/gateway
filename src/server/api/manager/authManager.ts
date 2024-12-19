@@ -11,9 +11,9 @@ export default class AuthManager {
         discord: new DiscordOAuthProvider()
     }
 
-    public static addRedirectHandler(url: string) {
+    public static addRedirectHandler(url: string, skipTokenCreation?: boolean) {
         const identifier = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        this._authHandlers.set(identifier, { type: "redirect", oneTimeUse: true, url });
+        this._authHandlers.set(identifier, { type: "redirect", oneTimeUse: true, url, createAccessToken: !skipTokenCreation });
         return identifier;
     }
 

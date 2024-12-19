@@ -11,6 +11,7 @@ export default class Client {
     public channels: string[] = [];
     public timeout: number = 60000;
     public timer: NodeJS.Timeout | null = null;
+    public meta: ClientMeta = {};
 
     constructor(type: ImplType) {
         this.id = `${type}-${ClientManager.newClientId()}`
@@ -59,4 +60,8 @@ export default class Client {
         let channel = PubSub.getChannel(channelId);
         channel.unsubscribeAll(this.id);
     }
+}
+
+export interface ClientMeta {
+
 }
