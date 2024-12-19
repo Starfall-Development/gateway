@@ -83,7 +83,7 @@ export default class GitHubOAuthProvider extends oAuthProvider {
             userEntity = await Core.database.services.user.findByAuthId(`github:${user.id}`) || undefined
 
             if (!userEntity) {
-                userEntity = await Core.database.services.user.createUser(user.login)
+                userEntity = await Core.database.services.user.createUser(user.login, user.avatar_url)
             }
 
             userAuth = await userEntity!.getAuth(AuthType.Discord)

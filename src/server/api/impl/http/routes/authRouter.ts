@@ -6,7 +6,7 @@ const authRouter = Router();
 
 authRouter.get('/status', async (req, res) => {
 
-    const session = await SessionManager.checkSession(req.cookies?.session)
+    const session = await SessionManager.checkSession(req.cookies?.session, req.headers["user-agent"] as string)
 
     if (!session) {
         res.status(401).send("Unauthorized")
@@ -57,7 +57,7 @@ authRouter.get('/:provider/me', async (req, res) => {
         return;
     }
 
-    const session = await SessionManager.checkSession(req.cookies?.session)
+    const session = await SessionManager.checkSession(req.cookies?.session, req.headers["user-agent"] as string)
 
     if (!session) {
         res.status(401).send("Unauthorized")
@@ -88,6 +88,5 @@ authRouter.get('/:provider/callback', (req, res) => {
 
     provider.handleCallback(req, res);
 })
-
 
 export default authRouter;

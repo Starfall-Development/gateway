@@ -86,7 +86,7 @@ export default class DiscordOAuthProvider extends oAuthProvider {
             userEntity = await Core.database.services.user.findByAuthId(`discord:${user.id}`) || undefined
 
             if (!userEntity) {
-                userEntity = await Core.database.services.user.createUser(user.username)
+                userEntity = await Core.database.services.user.createUser(user.username, `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`)
             }
 
             userAuth = await userEntity!.getAuth(AuthType.Discord)

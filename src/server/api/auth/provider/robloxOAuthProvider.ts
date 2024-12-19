@@ -106,7 +106,7 @@ export default class RobloxOAuthProvider extends oAuthProvider {
             userEntity = await Core.database.services.user.findByAuthId(`roblox:${user.sub}`) || undefined
 
             if (!userEntity) {
-                userEntity = await Core.database.services.user.createUser(user.name)
+                userEntity = await Core.database.services.user.createUser(user.name, user.picture)
             }
 
             userAuth = await userEntity!.getAuth(AuthType.Roblox)

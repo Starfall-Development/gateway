@@ -1,7 +1,15 @@
 import { Router } from 'express';
 import CommandManager from '../../server/api/index.js';
-import Id from '../../utils/id.js';
+import { resolve } from 'path';
 const authRouter = Router();
+
+authRouter.get('/login', (req, res) => {
+    res.sendFile(resolve("../admin-panel/dist/pages/login.html"));
+})
+
+authRouter.get('/logout', (req, res) => {
+    res.redirect('/auth/logout');
+})
 
 authRouter.get('/login/:provider', async (req, res) => {
 

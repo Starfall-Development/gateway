@@ -3,7 +3,6 @@ import { resolve } from 'path';
 import CommandManager from '../../index.js';
 
 import authRouter from './routes/authRouter.js';
-import testRouter from './routes/testRouter.js';
 import panelRouter from '../../../../panel/router/panelRouter.js';
 const router = Router();
 

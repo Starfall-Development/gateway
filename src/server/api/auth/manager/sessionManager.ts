@@ -1,22 +1,42 @@
 import Session from "../../../../database/entities/session.entity.js";
 import User from "../../../../database/entities/user.entity.js";
+import { ms } from "../../../../utils/time.js";
 import Core from "../../../core.js";
 
-const sessionExpire = 604800000;
+const sessionExpire = ms("1 week")
 
 export default class SessionManager {
+
+    public static cache: Map<string, Session> = new Map();
+
     public static async genSession(user: User, userAgent: string): Promise<Session> {
         const session = new Session();
         session.user = user;
         session.userAgent = userAgent;
 
         await Core.database.em.persistAndFlush(session);
+        this.cache.set(session.id, session);
 
         return session;
     }
 
     public static async checkSession(session: string, userAgent?: string): Promise<Session | undefined> {
-        this.checkSessionExpire();
+
+        // check if session is in cache
+        if (this.cache.has(session)) {
+            const cachedSession = this.cache.get(session)!;
+
+            if (userAgent && cachedSession.userAgent !== userAgent) {
+                return undefined;
+            }
+
+            // Update the session
+            cachedSession.lastUsed = new Date();
+
+            // no need to await
+            Core.database.em.persistAndFlush(cachedSession);
+            return cachedSession;
+        }
 
         // check if session exists
         const validSession = await Core.database.em.findOne(Session, {
@@ -27,17 +47,20 @@ export default class SessionManager {
 
         if (validSession) {
 
+            // Add to cache
+            this.cache.set(validSession.id, validSession);
+
             if (userAgent && validSession.userAgent !== userAgent) {
                 return undefined;
             }
 
             // Update the session
             validSession.lastUsed = new Date();
-            await Core.database.em.persistAndFlush(validSession);
+
+            // no need to await
+            Core.database.em.persistAndFlush(validSession);
             return validSession;
         }
-
-
 
         return undefined;
     }
@@ -46,10 +69,13 @@ export default class SessionManager {
         await Core.database.em.nativeDelete(Session, {
             id: session,
         });
+
+        this.cache.delete(session);
     }
 
     public static async touchSession(session: Session): Promise<void> {
         session.lastUsed = new Date();
+        this.cache.set(session.id, session);
         await Core.database.em.persistAndFlush(session);
     }
 
