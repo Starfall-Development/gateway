@@ -1,5 +1,8 @@
 import Channel from "../channel.js";
 
+/**
+ * Channel for internal server messages. Used by the server to communicate with itself.
+ */
 export const InternalChannel = new Channel<{
     "client:connect": { type: string, id: string },
     "client:disconnect": { type: string, id: string },

@@ -18,7 +18,6 @@ export default class Polling implements BaseServerImpl {
     }> = new Map();
 
     constructor(private app: Application) {
-
         // gateway to server communication
         app.get(this.path, (req, res) => {
             const auth = req.headers.authorization;
