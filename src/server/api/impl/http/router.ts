@@ -3,13 +3,12 @@ import { resolve } from 'path';
 import CommandManager from '../../index.js';
 
 import authRouter from './routes/authRouter.js';
-import panelRouter from '../../../../panel/router/panelRouter.js';
+import panelRouter from '../../../../modules/panel/router/panelRouter.js';
 const router = Router();
 
 
 router.use("/_", static_(resolve("../index/dist/_/")))
 router.use("/auth", authRouter)
-router.use("/panel", panelRouter)
 
 router.get('/', (req, res) => {
     res.sendFile(resolve("../index/dist/index.html"));

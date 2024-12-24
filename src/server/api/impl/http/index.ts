@@ -1,5 +1,5 @@
 import http from "http";
-import express from "express";
+import express, { Router } from "express";
 import { Logger } from "../../../../utils/logger.js";
 import BaseServerImpl from "../base/baseServerImpl.js";
 import { InternalChannel } from "../../../messaging/channels/internal.js";
@@ -48,5 +48,10 @@ export default class HTTP implements BaseServerImpl {
 
     public status(): "listening" | "closed" {
         return this.server.listening ? "listening" : "closed";
+    }
+
+    public registerRootRouter(path: string, newRouter: Router) {
+        router.use(path, newRouter);
+        this.logger.log(`Registered new router at ${path}`);
     }
 }

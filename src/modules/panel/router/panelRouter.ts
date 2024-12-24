@@ -4,8 +4,14 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import TemplateManager from '../templating/templateManager.js';
 import SessionTemplateSet from '../templating/sets/sessionTemplateSet.js';
-import SessionManager from '../../server/api/auth/manager/sessionManager.js';
+import SessionManager from '../../../server/api/auth/manager/sessionManager.js';
+import { InternalChannel } from '../../../server/messaging/channels/internal.js';
+import Core from '../../../server/core.js';
 const panelRouter = Router();
+
+InternalChannel.subscribeToEvent('router.panel', 'server:started', (_, data) => {
+    if (data.type == 'http') Core.http.registerRootRouter('/panel', panelRouter)
+});
 
 panelRouter.use("/_", static_(resolve("../admin-panel/dist/_/")))
 panelRouter.use("/auth", authRouter)

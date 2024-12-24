@@ -71,6 +71,14 @@ export default class UserAuth {
         this.user.addAuth(this)
     }
 
+    public get isExpired() {
+        return this.expiresAt ? this.expiresAt < new Date() : false
+    }
+
+    public get platformId() {
+        return this.authId.split(":")[1]
+    }
+
     public static fromPassword(user: User, username: string, password: string) {
         return new Promise<UserAuth>((resolve, reject) => {
 

@@ -1,4 +1,4 @@
-import { Logger } from "../../utils/logger.js";
+import { Logger } from "../../../utils/logger.js";
 import ComponentTemplateSet from "./sets/componentTemplateSet.js";
 import TemplateSet from "./templateSet.js";
 
@@ -8,15 +8,8 @@ export default class TemplateManager {
     public static logger = new Logger("TemplateManager")
 
     public static apply(input: string, sets: TemplateSet[]): string {
-        let output = input
-
-        sets = sets.concat(TemplateManager.globalTemplateSets)
-
-        sets.sort((a, b) => b.priority - a.priority).forEach(set => {
-            output = set.apply(output)
-        })
-
-        return output
+        sets.concat(TemplateManager.globalTemplateSets).sort((a, b) => b.priority - a.priority).forEach((set) => input = TemplateSet.prototype.apply.call(set, input))
+        return input
     }
 
     public static addGlobalSet(set: TemplateSet): void {

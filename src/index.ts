@@ -1,4 +1,5 @@
 import "dotenv/config";
+import './modules/index.js'
 import GlobalLogger from "./utils/logger.js";
 
 GlobalLogger.init()

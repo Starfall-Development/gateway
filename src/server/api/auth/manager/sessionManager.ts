@@ -4,10 +4,12 @@ import { ms } from "../../../../utils/time.js";
 import Core from "../../../core.js";
 
 const sessionExpire = ms("1 week")
+const sessionTouch = ms("5 minutes")
 
 export default class SessionManager {
 
     public static cache: Map<string, Session> = new Map();
+    public static touchCache: Map<string, NodeJS.Timeout> = new Map();
 
     public static async genSession(user: User, userAgent: string): Promise<Session> {
         const session = new Session();
@@ -30,11 +32,7 @@ export default class SessionManager {
                 return undefined;
             }
 
-            // Update the session
-            cachedSession.lastUsed = new Date();
-
-            // no need to await
-            Core.database.em.persistAndFlush(cachedSession);
+            this.touchSession(cachedSession);
             return cachedSession;
         }
 
@@ -76,7 +74,15 @@ export default class SessionManager {
     public static async touchSession(session: Session): Promise<void> {
         session.lastUsed = new Date();
         this.cache.set(session.id, session);
-        await Core.database.em.persistAndFlush(session);
+
+        if (this.touchCache.has(session.id)) {
+            clearTimeout(this.touchCache.get(session.id)!);
+        }
+
+        this.touchCache.set(session.id, setTimeout(async () => {
+            this.touchCache.delete(session.id);
+            await Core.database.em.persistAndFlush(session);
+        }, sessionTouch));
     }
 
     public static async checkSessionExpire(): Promise<void> {

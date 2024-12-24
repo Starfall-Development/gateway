@@ -1,4 +1,4 @@
-import Session from "../../../database/entities/session.entity.js";
+import Session from "../../../../database/entities/session.entity.js";
 import TemplateSet from "../templateSet.js";
 
 export default class SessionTemplateSet extends TemplateSet {
