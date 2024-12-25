@@ -54,14 +54,16 @@ linkingRouter.get('/next', async (req, res) => {
         skipTokenCreation: true // going to get the data needed from the session
     })
 
+
+    const session = await SessionManager.checkSession(req.cookies.session, req.headers["user-agent"] as string);
+
+    if (!session) {
+        res.send("We had an issue logging you in. Please try again.");
+        return;
+    }
+
     // @REFACTOR do NOT do this, this doesn't allow for the user to change which account they are linked to
     // check if the user is already linked
-    // const session = await SessionManager.checkSession(req.cookies.session, req.headers["user-agent"] as string);
-
-    // if (!session) {
-    //     res.send("We had an issue logging you in. Please try again.");
-    //     return;
-    // }
 
     // const robloxAuth = await session.user.getAuth(AuthType.Roblox);
 
