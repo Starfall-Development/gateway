@@ -1,5 +1,5 @@
 import ApiCommand from "../base/ApiCommand.js";
-import AuthManager from "../manager/authManager.js";
+import OAuthManager from "../manager/oAuthManager.js";
 
 export default class Command_CreateAuthHandler implements ApiCommand<{
     url: string;
@@ -10,7 +10,7 @@ export default class Command_CreateAuthHandler implements ApiCommand<{
     public async handle(options: { url: string; skipTokenCreation?: boolean }): Promise<{
         identifier: string;
     }> {
-        const res = AuthManager.addRedirectHandler(options.url, options.skipTokenCreation)
+        const res = OAuthManager.addRedirectHandler(options.url, options.skipTokenCreation)
         return {
             identifier: res
         }

@@ -3,13 +3,14 @@ import BaseServerImpl from "../base/baseServerImpl.js";
 import { InternalChannel } from "../../../messaging/channels/internal.js";
 import ClientManager from "../../manager/clientManager.js";
 import PollingClient from "./pollingClient.js";
+import { json } from "express";
 
 export default class Polling implements BaseServerImpl {
     public readonly type = "polling";
     public readonly clientId = `gateway.server.${this.type}`;
 
     public readonly path = "/events";
-    public readonly pollingTimeout = 20000;
+    public readonly pollingTimeout = 5000;
 
     public servers: Map<string, {
         resolve: (msg: any) => void,
@@ -17,13 +18,15 @@ export default class Polling implements BaseServerImpl {
         client: PollingClient
     }> = new Map();
 
-    constructor(private app: Application) {
+    constructor(app: Application) {
+        app.use(json());
         // gateway to server communication
         app.get(this.path, (req, res) => {
             const auth = req.headers.authorization;
             const serverId = req.query.serverId as string;
 
             if (!serverId || !auth || auth !== `Bearer ${process.env.SERVER_SECRET}`) {
+                console.log(serverId, auth)
                 res.status(401).send("Unauthorized");
                 return;
             }

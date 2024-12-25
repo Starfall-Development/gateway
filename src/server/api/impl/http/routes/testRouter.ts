@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import CommandManager from '../../../index.js';
+import CommandManager from '../../../manager/commandManager.js';
 const testRouter = Router();
 
 

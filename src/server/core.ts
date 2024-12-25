@@ -3,9 +3,11 @@ import HTTP from "./api/impl/http/index.js";
 import Socket from "./api/impl/socket/index.js";
 import { Logger } from "../utils/logger.js";
 import ClientManager from "./api/manager/clientManager.js";
-import CommandManager from "./api/index.js";
+import CommandManager from "./api/manager/commandManager.js";
 import Database from "../database/index.js";
 import Polling from "./api/impl/polling/index.js";
+import AuthManager from "./api/manager/authManager.js";
+import { DatabaseChannel } from "./messaging/channels/database.js";
 
 export default class Core {
     public static readonly clientId = "gateway.core";
@@ -26,16 +28,21 @@ export default class Core {
 
         Core.logger.info("Starting servers...");
 
-        this.tcp.start();
-        this.http.start();
-        this.socket.start();
-        this.polling.start();
-
         ClientManager.init()
-        CommandManager.init();
         this.database.init();
 
-        Core.logger.info("Servers started.");
+        DatabaseChannel.subscribeToEvent(this.clientId, "database:initialized", () => {
+            this.tcp.start();
+            this.http.start();
+            this.socket.start();
+            this.polling.start();
+
+            CommandManager.init();
+            AuthManager.init();
+
+            Core.logger.info("Servers started.");
+        })
+
     }
 
     public static stop() {

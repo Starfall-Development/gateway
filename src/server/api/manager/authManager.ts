@@ -1,53 +1,35 @@
-import { RedirectAuthHandler } from "../../types/auth.js";
-import DiscordOAuthProvider from "../auth/provider/discordOauthProvider.js";
-import GitHubOAuthProvider from "../auth/provider/githubOAuthProvider.js";
-import RobloxOAuthProvider from "../auth/provider/robloxOAuthProvider.js";
+import AuthToken from "../../../database/entities/authToken.entity.js";
+import Core from "../../core.js";
+import { AuthChannel, AuthFailReason } from "../../messaging/channels/auth.js";
+import ClientManager from "./clientManager.js";
 
 export default class AuthManager {
-    private static _authHandlers: Map<string, RedirectAuthHandler> = new Map();
-    public static authProviders = {
-        github: new GitHubOAuthProvider(),
-        roblox: new RobloxOAuthProvider(),
-        discord: new DiscordOAuthProvider()
-    }
+    public static readonly clientId = "gateway.AuthManager";
 
-    public static addRedirectHandler(url: string, skipTokenCreation?: boolean) {
-        const identifier = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        this._authHandlers.set(identifier, { type: "redirect", oneTimeUse: true, url, createAccessToken: !skipTokenCreation });
-        return identifier;
-    }
+    public static init() {
+        AuthChannel.subscribeToEvent(this.clientId, "auth:login", async (_, data) => {
 
-    public static addNamedRedirectHandler(identifier: string, key: string, url: string) {
-        if (this._authHandlers.has(identifier)) {
-            const handler = this._authHandlers.get(identifier);
-            if (handler?.key && handler.key === key) {
-                this._authHandlers.set(identifier, { type: "redirect", url });
-            } else {
-                return {
-                    success: false,
-                    message: "Incorrect key"
-                }
+            // logins won't happen *that* often and are completely async anyway,
+            // so we don't need to worry about this being slow
+            const authToken = await Core.database.services.authToken.findOne({ token: data.token });
+
+            if (!authToken) {
+                AuthChannel.publishToClient(this.clientId, data.sender, "auth:fail", {
+                    message: "Invalid token",
+                    reason: AuthFailReason.InvalidToken
+                })
+                return;
             }
 
-            return {
-                success: true,
-                message: "Handler updated"
-            }
-        } else {
-            this._authHandlers.set(identifier, { type: "redirect", url, key });
+            ClientManager.setClientMeta(data.sender, {
+                name: data.name,
+                tokenType: authToken.name,
+            })
 
-            return {
-                success: true,
-                message: "Handler added"
-            }
-        }
-    }
+            AuthChannel.publishToClient(this.clientId, data.sender, "auth:success", {
+                mesasge: "Authenticated"
+            })
+        })
 
-    public static getHandler(identifier: string) {
-        return this._authHandlers.get(identifier);
-    }
-
-    public static getProvider(provider: keyof typeof this.authProviders) {
-        return this.authProviders[provider];
     }
 }

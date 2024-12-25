@@ -1,8 +1,8 @@
 import { readdirSync } from "fs";
 import { resolve } from "path";
-import ApiCommand from "./base/ApiCommand.js";
-import { Logger } from "../../utils/logger.js";
-import { ApiChannel } from "../messaging/channels/api.js";
+import ApiCommand from "../base/ApiCommand.js";
+import { Logger } from "../../../utils/logger.js";
+import { ApiChannel } from "../../messaging/channels/api.js";
 
 export default class CommandManager {
 

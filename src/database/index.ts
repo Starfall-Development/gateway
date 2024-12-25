@@ -7,6 +7,7 @@ import Session from "./entities/session.entity.js";
 import User from "./entities/user.entity.js";
 import UserAuth from "./entities/userAuth.entity.js";
 import UserRepository from "./repositories/userRepository.js";
+import AuthToken from "./entities/authToken.entity.js";
 
 let instance: Database;
 
@@ -16,9 +17,10 @@ export default class Database {
   private _orm!: MikroORM;
   private _em!: EntityManager<PostgreSqlDriver>;
   public services!: {
-    session: EntityRepository<Session>,
+    session: EntityRepository<Session>
     user: UserRepository
     userAuth: EntityRepository<UserAuth>
+    authToken: EntityRepository<AuthToken>
   }
 
   constructor() {
@@ -53,7 +55,8 @@ export default class Database {
     this.services = {
       session: this.em.getRepository(Session),
       user: this.em.getRepository(User),
-      userAuth: this.em.getRepository(UserAuth)
+      userAuth: this.em.getRepository(UserAuth),
+      authToken: this.em.getRepository(AuthToken),
     }
 
     Logger.info("Database", "Database initialized");

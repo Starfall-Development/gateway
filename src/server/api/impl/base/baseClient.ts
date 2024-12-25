@@ -11,7 +11,7 @@ export default class Client {
     public channels: string[] = [];
     public timeout: number = 60000;
     public timer: NodeJS.Timeout | null = null;
-    public meta: ClientMeta = {};
+    public meta: Partial<ClientMeta> = {};
 
     constructor(type: ImplType) {
         this.id = `${type}-${ClientManager.newClientId()}`
@@ -60,8 +60,19 @@ export default class Client {
         let channel = PubSub.getChannel(channelId);
         channel.unsubscribeAll(this.id);
     }
+
+    public setMeta<T extends keyof ClientMeta>(key: T, value: ClientMeta[T]): void;
+    public setMeta(meta: Partial<ClientMeta>): void;
+    public setMeta(key: any, value?: any) {
+        if (typeof key === "object") {
+            this.meta = { ...this.meta, ...key };
+        } else {
+            this.meta[key as keyof ClientMeta] = value;
+        }
+    }
 }
 
 export interface ClientMeta {
-
+    name: string;
+    tokenType: string;
 }

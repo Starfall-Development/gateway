@@ -1,4 +1,4 @@
-import Client from "../impl/base/baseClient.js";
+import Client, { ClientMeta } from "../impl/base/baseClient.js";
 import { InternalChannel } from "../../messaging/channels/internal.js";
 import { SubscriberChannel } from "../../messaging/channels/subscriber.js";
 import { AuthChannel } from "../../messaging/channels/auth.js";
@@ -73,8 +73,7 @@ export default class ClientManager {
         client.subscribe("ping")
 
         AuthChannel.publishToClient(this.clientId, client.id, "auth:init", {
-            clientId: client.id,
-            token: "test"
+            clientId: client.id
         })
     }
 
@@ -87,6 +86,19 @@ export default class ClientManager {
 
     public static newClientId() {
         return `${Id.get()}-${this.clients.size}`;
+    }
+
+    public static getClient(id: string) {
+        return this.clients.get(id);
+    }
+
+    public static setClientMeta<T extends keyof ClientMeta>(clientId: string, key: T, value: ClientMeta[T]): void;
+    public static setClientMeta(clientId: string, meta: Partial<ClientMeta>): void;
+    public static setClientMeta(clientId: string, key: any, value?: any) {
+        const client = this.clients.get(clientId);
+        if (client) {
+            client.setMeta(key, value);
+        }
     }
 
 }

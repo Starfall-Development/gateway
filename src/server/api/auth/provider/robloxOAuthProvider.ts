@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 import Core from "../../../core.js";
 import UserAuth, { AuthType } from "../../../../database/entities/userAuth.entity.js";
 import SessionManager from "../manager/sessionManager.js";
-import AuthManager from "../../manager/authManager.js";
+import OAuthManager from "../../manager/oAuthManager.js";
 import UserAccessToken from "../../../../database/entities/userAccessToken.entity.js";
 import User from "../../../../database/entities/user.entity.js";
 import { ms, time } from "../../../../utils/time.js";
@@ -122,7 +122,7 @@ export default class RobloxOAuthProvider extends oAuthProvider {
         res.cookie("session", session.id, { maxAge: ms("7 days"), httpOnly: true })
 
         if (identifier && typeof identifier === "string") {
-            const handler = AuthManager.getHandler(identifier)
+            const handler = OAuthManager.getHandler(identifier)
             if (!handler) {
                 res.status(400).send("Invalid handler: The website redirecting you here didn't correctly establish a connection with the gateway. Please try again. (Error: No handler found)")
                 return

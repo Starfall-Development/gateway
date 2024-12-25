@@ -1,5 +1,5 @@
 import ApiCommand from "../base/ApiCommand.js";
-import AuthManager from "../manager/authManager.js";
+import OAuthManager from "../manager/oAuthManager.js";
 
 export default class Command_CreateAuthHandler implements ApiCommand<{
     id: string;
@@ -15,7 +15,7 @@ export default class Command_CreateAuthHandler implements ApiCommand<{
         identifier: string;
         message: string;
     }> {
-        const res = AuthManager.addNamedRedirectHandler(options.id, options.key, options.url)
+        const res = OAuthManager.addNamedRedirectHandler(options.id, options.key, options.url)
         return {
             success: res.success,
             identifier: options.id,

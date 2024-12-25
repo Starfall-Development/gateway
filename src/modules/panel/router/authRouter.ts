@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import CommandManager from '../../../server/api/index.js';
+import CommandManager from '../../../server/api/manager/commandManager.js';
 import { resolve } from 'path';
 const authRouter = Router();
 

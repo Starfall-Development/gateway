@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { InternalChannel } from '../../../server/messaging/channels/internal.js';
 import Core from '../../../server/core.js';
-import CommandManager from '../../../server/api/index.js';
+import CommandManager from '../../../server/api/manager/commandManager.js';
 import SessionManager from '../../../server/api/auth/manager/sessionManager.js';
 import { AuthType } from '../../../database/entities/userAuth.entity.js';
 import { LinkingChannel } from '../../../server/messaging/channels/linking.js';

@@ -4,9 +4,10 @@ import Channel from "../channel.js";
  * Channel for handling authentication over pubsub.
  */
 export const AuthChannel = new Channel<{
-    "auth:init": { clientId: string, token: string },
-    "auth:success": { clientId: string },
-    "auth:fail": { clientId: string, error: string }
+    "auth:init": { clientId: string },
+    "auth:login": { name: string, token: string },
+    "auth:success": { mesasge?: string },
+    "auth:fail": { message: string, reason: AuthFailReason }
 }>("auth", {
     destroyOnEmpty: false,
     isPublic: false,
@@ -14,3 +15,7 @@ export const AuthChannel = new Channel<{
         "gateway.ClientManager"
     ]
 })
+
+export enum AuthFailReason {
+    InvalidToken
+}

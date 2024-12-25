@@ -1,9 +1,7 @@
 import { Router, static as static_ } from 'express';
 import { resolve } from 'path';
-import CommandManager from '../../index.js';
-
+import CommandManager from '../../manager/commandManager.js';
 import authRouter from './routes/authRouter.js';
-import panelRouter from '../../../../modules/panel/router/panelRouter.js';
 const router = Router();
 
 

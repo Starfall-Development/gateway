@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import AuthManager from '../../../manager/authManager.js';
+import OAuthManager from '../../../manager/oAuthManager.js';
 import SessionManager from '../../../auth/manager/sessionManager.js';
 import { AuthTypeNames } from '../../../../../database/entities/userAuth.entity.js';
 const authRouter = Router();
@@ -56,7 +56,7 @@ authRouter.get('/logout', async (req, res) => {
 })
 
 authRouter.get('/:provider/me', async (req, res) => {
-    const provider = AuthManager.getProvider(req.params.provider as keyof typeof AuthManager["authProviders"])
+    const provider = OAuthManager.getProvider(req.params.provider as keyof typeof OAuthManager["authProviders"])
 
     if (!provider) {
         res.status(404).send("Provider not found")
@@ -74,7 +74,7 @@ authRouter.get('/:provider/me', async (req, res) => {
 })
 
 authRouter.get('/:provider/login', async (req, res) => {
-    const provider = AuthManager.getProvider(req.params.provider as keyof typeof AuthManager["authProviders"])
+    const provider = OAuthManager.getProvider(req.params.provider as keyof typeof OAuthManager["authProviders"])
 
     if (!provider) {
         res.status(404).send("Provider not found")
@@ -85,7 +85,7 @@ authRouter.get('/:provider/login', async (req, res) => {
 })
 
 authRouter.get('/:provider/callback', (req, res) => {
-    const provider = AuthManager.getProvider(req.params.provider as keyof typeof AuthManager["authProviders"])
+    const provider = OAuthManager.getProvider(req.params.provider as keyof typeof OAuthManager["authProviders"])
 
     if (!provider) {
         res.status(404).send("Provider not found")

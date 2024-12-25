@@ -4,7 +4,7 @@ import SessionManager from "../manager/sessionManager.js";
 import oAuthProvider, { UserData } from "./oAuthProvider.js";
 import Core from "../../../core.js";
 import UserAccessToken from "../../../../database/entities/userAccessToken.entity.js";
-import AuthManager from "../../manager/authManager.js";
+import OAuthManager from "../../manager/oAuthManager.js";
 import User from "../../../../database/entities/user.entity.js";
 import { ms, time } from "../../../../utils/time.js";
 
@@ -103,7 +103,7 @@ export default class DiscordOAuthProvider extends oAuthProvider {
 
         if (identifier && typeof identifier === "string") {
 
-            const handler = AuthManager.getHandler(identifier)
+            const handler = OAuthManager.getHandler(identifier)
             if (!handler) {
                 res.status(400).send("Invalid handler: The website redirecting you here didn't correctly establish a connection with the gateway. Please try again. (Error: No handler found)")
                 return
